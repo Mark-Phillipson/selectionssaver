@@ -14,10 +14,59 @@
   "contributes": {
     "commands": [
       {
+        "command": "selectionssaver.saveBookmark",
+        "title": "Save Selection Bookmark",
+        "category": "SelectionsSaver"
+      },
+      {
+        "command": "selectionssaver.restoreBookmark",
+        "title": "Restore Selection Bookmark",
+        "category": "SelectionsSaver"
+      },
+      {
+        "command": "selectionssaver.listBookmarks",
+        "title": "List All Bookmarks",
+        "category": "SelectionsSaver"
+      },
+      {
+        "command": "selectionssaver.clearAllBookmarks",
+        "title": "Clear All Bookmarks",
+        "category": "SelectionsSaver"
+      },
+      {
         "command": "selectionssaver.helloWorld",
-        "title": "Hello World"
+        "title": "Hello World",
+        "category": "SelectionsSaver"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "selectionssaver.saveBookmark",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "selectionssaver.restoreBookmark",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorTextFocus"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "selectionssaver.saveBookmark",
+          "group": "navigation@1",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "selectionssaver.restoreBookmark",
+          "group": "navigation@2",
+          "when": "editorTextFocus"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -1,24 +1,76 @@
-# selectionssaver README
+# SelectionsSaver
 
-This is the README for your extension "selectionssaver". After writing up a brief description, we recommend including the following sections.
+A Visual Studio Code extension that provides enhanced bookmark functionality by recording and restoring:
+- Text selections in code files
+- Line locations and cursor positions  
+- Vertical scrollbar positions
+- File context for navigation
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Save Selection Bookmarks
+- **Command**: `SelectionsSaver: Save Selection Bookmark`
+- **Shortcut**: `Ctrl+Shift+S` (Windows/Linux) / `Cmd+Shift+S` (Mac)
+- Captures your current text selection, cursor position, and scroll location
+- Allows you to provide an optional name for the bookmark
+- Works across all file types
 
-For example if there is an image subfolder under your extension project workspace:
+### Restore Selection Bookmarks
+- **Command**: `SelectionsSaver: Restore Selection Bookmark`
+- **Shortcut**: `Ctrl+Shift+R` (Windows/Linux) / `Cmd+Shift+R` (Mac)
+- Shows a quick pick list of all saved bookmarks
+- Navigates to the saved file, restores the exact selection, and scroll position
+- Handles cases where files have been moved or modified
 
-\!\[feature X\]\(images/feature-x.png\)
+### Bookmark Management
+- **List Bookmarks**: View all saved bookmarks with file paths and line numbers
+- **Clear All Bookmarks**: Remove all saved bookmarks (with confirmation)
+- Context menu integration for easy access
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## How to Use
+
+1. **Save a Bookmark**:
+   - Select some text or position your cursor where you want to bookmark
+   - Press `Ctrl+Shift+S` or use Command Palette → "Save Selection Bookmark"
+   - Optionally enter a name for the bookmark
+
+2. **Restore a Bookmark**:
+   - Press `Ctrl+Shift+R` or use Command Palette → "Restore Selection Bookmark"
+   - Select from the list of saved bookmarks
+   - The extension will open the file and restore your exact selection and scroll position
+
+3. **Manage Bookmarks**:
+   - Use Command Palette → "List All Bookmarks" to see all saved bookmarks
+   - Use Command Palette → "Clear All Bookmarks" to remove all bookmarks
+
+## Commands
+
+| Command | Description | Keyboard Shortcut |
+|---------|-------------|-------------------|
+| `selectionssaver.saveBookmark` | Save current selection as bookmark | `Ctrl+Shift+S` |
+| `selectionssaver.restoreBookmark` | Restore a saved bookmark | `Ctrl+Shift+R` |
+| `selectionssaver.listBookmarks` | List all saved bookmarks | - |
+| `selectionssaver.clearAllBookmarks` | Clear all bookmarks | - |
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Visual Studio Code 1.100.3 or higher
 
-## Extension Settings
+## Data Storage
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Bookmarks are stored using VS Code's global state, meaning they persist across:
+- VS Code restarts
+- Workspace changes
+- Extension updates
+
+Each bookmark contains:
+- Unique identifier
+- Optional user-provided name
+- File path
+- Selection start/end positions
+- Scroll position
+- Timestamp
+- Workspace folder (if applicable)
 
 For example:
 
