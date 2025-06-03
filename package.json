@@ -4,6 +4,8 @@
   "description": "Enhanced bookmark functionality that records text selections, cursor positions, and scroll locations for precise navigation",
   "version": "0.0.1",
   "publisher": "MarcusVoiceCoder",
+  "license": "MIT",
+  "icon": "images/icon.png",
   "author": {
     "name": "Mark Phillipson",
     "email": "MPhillipson0@Gmail.com"
