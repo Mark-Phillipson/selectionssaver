@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/selectionssaver"
+    "url": "https://github.com/Mark-Phillipson/selectionssaver"
   },
   "keywords": [
     "bookmarks",
@@ -49,11 +49,6 @@
       {
         "command": "selectionssaver.clearAllBookmarks",
         "title": "Clear All Bookmarks",
-        "category": "SelectionsSaver"
-      },
-      {
-        "command": "selectionssaver.helloWorld",
-        "title": "Hello World",
         "category": "SelectionsSaver"
       }
     ],

@@ -203,18 +203,12 @@ export function activate(context: vscode.ExtensionContext) {
 		bookmarkManager.clearAllBookmarks();
 	});
 
-	// Keep the original hello world command for testing
-	const helloWorldCommand = vscode.commands.registerCommand('selectionssaver.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from SelectionsSaver!');
-	});
-
 	// Add all commands to subscriptions
 	context.subscriptions.push(
 		saveBookmarkCommand,
 		restoreBookmarkCommand,
 		listBookmarksCommand,
-		clearBookmarksCommand,
-		helloWorldCommand
+		clearBookmarksCommand
 	);
 }
 
