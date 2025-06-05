@@ -51,6 +51,8 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 | `selectionssaver.restoreBookmark` | Restore a saved bookmark | `Ctrl+Shift+R` |
 | `selectionssaver.listBookmarks` | List all saved bookmarks | - |
 | `selectionssaver.clearAllBookmarks` | Clear all bookmarks | - |
+| `selectionssaver.swapWithNextBookmark` | Swap current selection with next bookmark | `Ctrl+Shift+2` |
+| `selectionssaver.swapWithPreviousBookmark` | Swap current selection with previous bookmark | `Ctrl+Shift+1` |
 
 ## Requirements
 
@@ -72,32 +74,28 @@ Each bookmark contains:
 - Timestamp
 - Workspace folder (if applicable)
 
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
 ## Known Issues
 
 Calling out known issues can help limit users opening duplicate issues against your extension.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
+### 1.1.0
+- Added bookmark management commands: list, delete, and clear all bookmarks
+- Implemented import/export of bookmark collections
+- Improved error handling for missing or changed files
+- Enhanced UI feedback and user prompts
 
 ### 1.0.1
+- Fixed minor bugs in bookmark persistence and restoration
+- Improved compatibility with recent VS Code versions
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+### 1.0.0
+- Initial release of SelectionsSaver
+- Save and restore text selections, cursor positions, and scroll locations
+- Bookmarks persist across VS Code sessions
+- Quick pick UI for restoring bookmarks
+- Optional bookmark naming and workspace folder association
 
 ---
 
