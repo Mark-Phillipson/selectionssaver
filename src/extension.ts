@@ -19,11 +19,12 @@ interface BookmarkData {
 }
 
 /**
- * Class to manage bookmark operations
+ * Class to manage bookmark operations and selection swap
  */
 class BookmarkManager {
 	private context: vscode.ExtensionContext;
 	private readonly STORAGE_KEY = 'selectionssaver.bookmarks';
+	private readonly SWAP_SLOT_KEY = 'selectionssaver.swapSlot';
 
 	constructor(context: vscode.ExtensionContext) {
 		this.context = context;
@@ -173,6 +174,79 @@ class BookmarkManager {
 			vscode.window.showInformationMessage('All bookmarks cleared!');
 		}
 	}
+
+	/**
+	 * Save current selection to swap slot (temporary)
+	 */
+	async saveSelectionToSwapSlot(): Promise<void> {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showErrorMessage('No active editor found');
+			return;
+		}
+		const swapSlot = {
+			filePath: editor.document.uri.fsPath,
+			selection: {
+				start: {
+					line: editor.selection.start.line,
+					character: editor.selection.start.character
+				},
+				end: {
+					line: editor.selection.end.line,
+					character: editor.selection.end.character
+				}
+			}
+		};
+		await this.context.workspaceState.update(this.SWAP_SLOT_KEY, swapSlot);
+		vscode.window.showInformationMessage('Selection saved to swap slot.');
+	}
+
+	/**
+	 * Swap current selection with swap slot
+	 */
+	async swapWithSwapSlot(): Promise<void> {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			vscode.window.showErrorMessage('No active editor found');
+			return;
+		}
+		const swapSlot = this.context.workspaceState.get<any>(this.SWAP_SLOT_KEY);
+		if (!swapSlot) {
+			vscode.window.showErrorMessage('No selection in swap slot.');
+			return;
+		}
+		// Save current selection to swap slot
+		const currentSelection = {
+			filePath: editor.document.uri.fsPath,
+			selection: {
+				start: {
+					line: editor.selection.start.line,
+					character: editor.selection.start.character
+				},
+				end: {
+					line: editor.selection.end.line,
+					character: editor.selection.end.character
+				}
+			}
+		};
+		await this.context.workspaceState.update(this.SWAP_SLOT_KEY, currentSelection);
+
+		// Switch to swap slot selection (open file if needed)
+		if (swapSlot.filePath !== editor.document.uri.fsPath) {
+			const document = await vscode.workspace.openTextDocument(swapSlot.filePath);
+			await vscode.window.showTextDocument(document);
+		}
+		const targetEditor = vscode.window.activeTextEditor;
+		if (!targetEditor) {
+			vscode.window.showErrorMessage('Failed to switch editor for swap.');
+			return;
+		}
+		const startPos = new vscode.Position(swapSlot.selection.start.line, swapSlot.selection.start.character);
+		const endPos = new vscode.Position(swapSlot.selection.end.line, swapSlot.selection.end.character);
+		targetEditor.selection = new vscode.Selection(startPos, endPos);
+		targetEditor.revealRange(new vscode.Range(startPos, endPos));
+		vscode.window.showInformationMessage('Selection swapped with swap slot.');
+	}
 }
 
 // This method is called when your extension is activated
@@ -203,12 +277,22 @@ export function activate(context: vscode.ExtensionContext) {
 		bookmarkManager.clearAllBookmarks();
 	});
 
+	const saveSwapSlotCommand = vscode.commands.registerCommand('selectionssaver.saveSelectionToSwapSlot', () => {
+		bookmarkManager.saveSelectionToSwapSlot();
+	});
+
+	const swapWithSwapSlotCommand = vscode.commands.registerCommand('selectionssaver.swapWithSwapSlot', () => {
+		bookmarkManager.swapWithSwapSlot();
+	});
+
 	// Add all commands to subscriptions
 	context.subscriptions.push(
 		saveBookmarkCommand,
 		restoreBookmarkCommand,
 		listBookmarksCommand,
-		clearBookmarksCommand
+		clearBookmarksCommand,
+		saveSwapSlotCommand,
+		swapWithSwapSlotCommand
 	);
 }
 

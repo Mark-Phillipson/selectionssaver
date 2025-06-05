@@ -50,6 +50,16 @@
         "command": "selectionssaver.clearAllBookmarks",
         "title": "Clear All Bookmarks",
         "category": "SelectionsSaver"
+      },
+      {
+        "command": "selectionssaver.saveSelectionToSwapSlot",
+        "title": "Save Selection to Swap Slot",
+        "category": "SelectionsSaver"
+      },
+      {
+        "command": "selectionssaver.swapWithSwapSlot",
+        "title": "Swap With Swap Slot",
+        "category": "SelectionsSaver"
       }
     ],
     "keybindings": [
@@ -64,6 +74,18 @@
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "selectionssaver.saveSelectionToSwapSlot",
+        "key": "ctrl+shift+1",
+        "mac": "cmd+shift+1",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "selectionssaver.swapWithSwapSlot",
+        "key": "ctrl+shift+2",
+        "mac": "cmd+shift+2",
+        "when": "editorTextFocus"
       }
     ],
     "menus": {
@@ -76,6 +98,16 @@
         {
           "command": "selectionssaver.restoreBookmark",
           "group": "navigation@2",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "selectionssaver.saveSelectionToSwapSlot",
+          "group": "navigation@3",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "selectionssaver.swapWithSwapSlot",
+          "group": "navigation@4",
           "when": "editorTextFocus"
         }
       ]
