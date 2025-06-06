@@ -143,24 +143,6 @@ class BookmarkManager {
 	}
 
 	/**
-	 * List all bookmarks
-	 */
-	async listBookmarks(): Promise<void> {
-		const bookmarks = this.getBookmarks();
-		
-		if (bookmarks.length === 0) {
-			vscode.window.showInformationMessage('No bookmarks saved yet');
-			return;
-		}
-
-		const items = bookmarks.map(bookmark => 
-			`• ${bookmark.name} - ${bookmark.filePath} (Line ${bookmark.selection.start.line + 1})`
-		).join('\n');
-
-		vscode.window.showInformationMessage(`Saved Bookmarks:\n${items}`);
-	}
-
-	/**
 	 * Clear all bookmarks
 	 */
 	async clearAllBookmarks(): Promise<void> {
@@ -269,10 +251,6 @@ export function activate(context: vscode.ExtensionContext) {
 		bookmarkManager.restoreBookmark();
 	});
 
-	const listBookmarksCommand = vscode.commands.registerCommand('selectionssaver.listBookmarks', () => {
-		bookmarkManager.listBookmarks();
-	});
-
 	const clearBookmarksCommand = vscode.commands.registerCommand('selectionssaver.clearAllBookmarks', () => {
 		bookmarkManager.clearAllBookmarks();
 	});
@@ -289,7 +267,6 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		saveBookmarkCommand,
 		restoreBookmarkCommand,
-		listBookmarksCommand,
 		clearBookmarksCommand,
 		saveSwapSlotCommand,
 		swapWithSwapSlotCommand

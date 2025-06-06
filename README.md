@@ -6,6 +6,7 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 - Vertical scrollbar positions
 - File context for navigation
 
+
 ## Features
 
 ### Save Selection Bookmarks
@@ -49,10 +50,9 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 |---------|-------------|-------------------|
 | `selectionssaver.saveBookmark` | Save current selection as bookmark | `Ctrl+Shift+S` |
 | `selectionssaver.restoreBookmark` | Restore a saved bookmark | `Ctrl+Shift+R` |
-| `selectionssaver.listBookmarks` | List all saved bookmarks | - |
 | `selectionssaver.clearAllBookmarks` | Clear all bookmarks | - |
-| `selectionssaver.swapWithNextBookmark` | Swap current selection with next bookmark | `Ctrl+Shift+2` |
-| `selectionssaver.swapWithPreviousBookmark` | Swap current selection with previous bookmark | `Ctrl+Shift+1` |
+| `selectionssaver.saveSelectionToSwapSlot` | Save current selection to swap slot | `Ctrl+Shift+2` |
+| `selectionssaver.swapWithSwapSlot` | Swap current selection with swap slot | `Ctrl+Shift+1` |
 
 ## Requirements
 
@@ -76,7 +76,8 @@ Each bookmark contains:
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Bookmarks reference static line and character positions. If lines are added or removed in a file after a bookmark is created, the bookmark may point to an incorrect or outdated location.
+- The "List Bookmarks" command currently only lists a single bookmark instead of all saved bookmarks.
 
 ## Release Notes
 
