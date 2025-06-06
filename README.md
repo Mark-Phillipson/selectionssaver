@@ -77,7 +77,6 @@ Each bookmark contains:
 
 ## Known Issues
 
-
 - Bookmarks reference static line and character positions. If lines are added or removed in a file after a bookmark is created, the bookmark may point to an incorrect or outdated location.
 
 **Workarounds:**
@@ -90,6 +89,11 @@ Each bookmark contains:
 It is technically possible to listen for file changes and attempt to update bookmarks automatically using the VS Code API (e.g., `onDidChangeTextDocument`). However, handling all possible text edits and keeping bookmarks accurate is complex and may impact performance. This feature may be considered for a future release if there is enough user interest.
 
 ## Release Notes
+
+### 1.2.0
+- Added ability to delete individual bookmarks directly from the restore picker (trash icon)
+- Removed non-functional 'List Bookmarks' command and related UI/documentation
+- Cleaned up documentation and improved user guidance for known issues and workarounds
 
 ### 1.1.0
 - Added bookmark management commands: list, delete, and clear all bookmarks
@@ -130,3 +134,8 @@ You can author your README using Visual Studio Code. Here are some useful editor
 * [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
+
+## Repository
+
+The source code for SelectionsSaver is available on GitHub:
+[https://github.com/Mark-Phillipson/selectionssaver](https://github.com/Mark-Phillipson/selectionssaver)
