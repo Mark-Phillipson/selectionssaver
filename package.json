@@ -42,11 +42,6 @@
         "category": "SelectionsSaver"
       },
       {
-        "command": "selectionssaver.listBookmarks",
-        "title": "List All Bookmarks",
-        "category": "SelectionsSaver"
-      },
-      {
         "command": "selectionssaver.clearAllBookmarks",
         "title": "Clear All Bookmarks",
         "category": "SelectionsSaver"
