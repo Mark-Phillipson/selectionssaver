@@ -35,9 +35,10 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
    - Press `Ctrl+Shift+S` or use Command Palette → "Save Selection Bookmark"
    - Optionally enter a name for the bookmark
 
-2. **Restore a Bookmark**:
+2. **Restore or Delete a Bookmark**:
    - Press `Ctrl+Shift+R` or use Command Palette → "Restore Selection Bookmark"
-   - Select from the list of saved bookmarks
+   - Select from the list of saved bookmarks to restore
+   - To delete a bookmark, click the trash icon next to it in the list
    - The extension will open the file and restore your exact selection and scroll position
 
 3. **Manage Bookmarks**:
@@ -49,7 +50,7 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 | Command | Description | Keyboard Shortcut |
 |---------|-------------|-------------------|
 | `selectionssaver.saveBookmark` | Save current selection as bookmark | `Ctrl+Shift+S` |
-| `selectionssaver.restoreBookmark` | Restore a saved bookmark | `Ctrl+Shift+R` |
+| `selectionssaver.restoreBookmark` | Restore or delete a saved bookmark | `Ctrl+Shift+R` |
 | `selectionssaver.clearAllBookmarks` | Clear all bookmarks | - |
 | `selectionssaver.saveSelectionToSwapSlot` | Save current selection to swap slot | `Ctrl+Shift+2` |
 | `selectionssaver.swapWithSwapSlot` | Swap current selection with swap slot | `Ctrl+Shift+1` |
@@ -76,8 +77,17 @@ Each bookmark contains:
 
 ## Known Issues
 
+
 - Bookmarks reference static line and character positions. If lines are added or removed in a file after a bookmark is created, the bookmark may point to an incorrect or outdated location.
-- The "List Bookmarks" command currently only lists a single bookmark instead of all saved bookmarks.
+
+**Workarounds:**
+- After major edits, re-save your bookmarks to ensure they point to the correct location.
+- Place a unique comment or marker (e.g., `// BOOKMARK: MyFeature`) at the desired location. After editing, search for this marker and re-create the bookmark if needed.
+- Avoid large-scale edits above bookmarked lines if you want to preserve bookmark accuracy.
+- If a bookmark points to the wrong line after edits, use the extension to jump close to the old location, then manually adjust and re-save the bookmark.
+
+**Note:**
+It is technically possible to listen for file changes and attempt to update bookmarks automatically using the VS Code API (e.g., `onDidChangeTextDocument`). However, handling all possible text edits and keeping bookmarks accurate is complex and may impact performance. This feature may be considered for a future release if there is enough user interest.
 
 ## Release Notes
 

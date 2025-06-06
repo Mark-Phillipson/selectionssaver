@@ -81,32 +81,62 @@ class BookmarkManager {
 	}
 
 	/**
-	 * Show list of bookmarks and restore selected one
+	 * Show list of bookmarks and restore or delete selected one
 	 */
 	async restoreBookmark(): Promise<void> {
-		const bookmarks = this.getBookmarks();
-		
+		let bookmarks = this.getBookmarks();
 		if (bookmarks.length === 0) {
 			vscode.window.showInformationMessage('No bookmarks saved yet');
 			return;
 		}
 
-		// Create quick pick items
-		const items = bookmarks.map(bookmark => ({
+		const quickPick = vscode.window.createQuickPick();
+		quickPick.items = bookmarks.map(bookmark => ({
 			label: bookmark.name || 'Unnamed Bookmark',
 			description: `${bookmark.filePath} (Line ${bookmark.selection.start.line + 1})`,
 			detail: `Saved: ${bookmark.timestamp.toLocaleString()}`,
-			bookmark: bookmark
+			bookmark: bookmark,
+			buttons: [
+				{
+					iconPath: new vscode.ThemeIcon('trash'),
+					tooltip: 'Delete Bookmark'
+				}
+			]
 		}));
+		quickPick.placeholder = 'Select a bookmark to restore or delete';
 
-		// Show quick pick
-		const selected = await vscode.window.showQuickPick(items, {
-			placeHolder: 'Select a bookmark to restore'
+		quickPick.onDidTriggerItemButton(async e => {
+			const toDelete = (e.item as any).bookmark;
+			bookmarks = bookmarks.filter(b => b.id !== toDelete.id);
+			await this.context.globalState.update(this.STORAGE_KEY, bookmarks);
+			quickPick.items = bookmarks.map(bookmark => ({
+				label: bookmark.name || 'Unnamed Bookmark',
+				description: `${bookmark.filePath} (Line ${bookmark.selection.start.line + 1})`,
+				detail: `Saved: ${bookmark.timestamp.toLocaleString()}`,
+				bookmark: bookmark,
+				buttons: [
+					{
+						iconPath: new vscode.ThemeIcon('trash'),
+						tooltip: 'Delete Bookmark'
+					}
+				]
+			}));
+			vscode.window.showInformationMessage(`Bookmark deleted.`);
+			if (bookmarks.length === 0) {
+				quickPick.hide();
+			}
 		});
 
-		if (selected) {
-			await this.restoreBookmarkData(selected.bookmark);
-		}
+		quickPick.onDidAccept(async () => {
+			const selected = quickPick.selectedItems[0];
+			if (selected) {
+				await this.restoreBookmarkData((selected as any).bookmark);
+			}
+			quickPick.hide();
+		});
+
+		quickPick.onDidHide(() => quickPick.dispose());
+		quickPick.show();
 	}
 
 	/**
