@@ -19,7 +19,8 @@
     "navigation",
     "selections",
     "productivity",
-    "editor"
+    "editor",
+    "accessibility"
   ],
   "engines": {
     "vscode": "^1.100.3"
