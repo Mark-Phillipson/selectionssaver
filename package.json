@@ -2,7 +2,7 @@
   "name": "selectionssaver",
   "displayName": "SelectionsSaver",
   "description": "Enhanced bookmark functionality that records text selections, cursor positions, and scroll locations for precise navigation",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "publisher": "MarcusVoiceCoder",
   "license": "MIT",
   "icon": "images/icon.png",
