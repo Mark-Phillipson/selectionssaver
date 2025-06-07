@@ -46,6 +46,12 @@ class BookmarkManager {
 			placeHolder: 'Bookmark name'
 		});
 
+		// If user cancelled (pressed Esc or clicked away), do not save
+		if (typeof name === 'undefined') {
+			vscode.window.showInformationMessage('Bookmark not saved.');
+			return;
+		}
+
 		// Generate unique ID
 		const id = Date.now().toString();
 		

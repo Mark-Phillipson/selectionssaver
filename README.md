@@ -86,6 +86,9 @@ It is technically possible to listen for file changes and attempt to update book
 
 ## Release Notes
 
+### 1.2.1
+- Fixed: Bookmarks are no longer saved if you cancel the name input box (e.g., by pressing Esc or clicking away). The extension will only save a bookmark if you confirm the input box.
+
 ### 1.2.0
 - Added ability to delete individual bookmarks directly from the restore picker (trash icon)
 - Removed non-functional 'List Bookmarks' command and related UI/documentation
