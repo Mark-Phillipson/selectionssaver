@@ -6,6 +6,8 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 - Vertical scrollbar positions
 - File context for navigation
 
+**NEW**: Bookmarks are now workspace-specific! Each workspace maintains its own set of bookmarks, providing better organization and preventing bookmark clutter when working on multiple projects.
+
 
 ## Features
 
@@ -70,6 +72,16 @@ Each bookmark contains:
 - Scroll position
 - Timestamp
 - Workspace folder (if applicable)
+
+## Workspace-Specific Bookmarks
+
+**Important**: Bookmarks are now scoped to individual workspaces for better organization:
+
+- Each workspace maintains its own separate set of bookmarks
+- Bookmarks are only visible when their corresponding workspace is open
+- No workspace required error: You must have a workspace/folder open to save or restore bookmarks
+- When switching between workspaces, you'll only see bookmarks relevant to the current workspace
+- This prevents bookmark clutter and improves organization when working on multiple projects
 
 ## Known Issues
 
