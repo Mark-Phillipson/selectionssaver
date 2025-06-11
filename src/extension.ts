@@ -23,7 +23,7 @@ interface BookmarkData {
  */
 class BookmarkManager {
 	private context: vscode.ExtensionContext;
-	private readonly STORAGE_KEY = 'selectionssaver.bookmarks';
+	private readonly STORAGE_KEY_PREFIX = 'selectionssaver.bookmarks';
 	private readonly SWAP_SLOT_KEY = 'selectionssaver.swapSlot';
 
 	constructor(context: vscode.ExtensionContext) {
@@ -44,8 +44,34 @@ class BookmarkManager {
 			return workspaceFolders[0].uri.fsPath;
 		} else {
 			// For multi-root, create a composite identifier
-			return workspaceFolders.map(folder => folder.name).sort().join('|');
+			return workspaceFolders.map(folder => folder.uri.fsPath).sort().join('|');
 		}
+	}
+
+	/**
+	 * Get storage key for current workspace
+	 */
+	private getWorkspaceStorageKey(): string | null {
+		const workspaceId = this.getCurrentWorkspaceId();
+		if (!workspaceId) {
+			return null;
+		}
+		// Create a hash-like key from the workspace path to avoid very long keys
+		const hash = this.hashString(workspaceId);
+		return `${this.STORAGE_KEY_PREFIX}.${hash}`;
+	}
+
+	/**
+	 * Simple hash function for workspace paths
+	 */
+	private hashString(str: string): string {
+		let hash = 0;
+		for (let i = 0; i < str.length; i++) {
+			const char = str.charCodeAt(i);
+			hash = ((hash << 5) - hash) + char;
+			hash = hash & hash; // Convert to 32-bit integer
+		}
+		return Math.abs(hash).toString(36);
 	}
 
 	/**
@@ -110,10 +136,17 @@ class BookmarkManager {
 		console.log(`Current workspace folders:`, vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath));
 		
 		bookmarks.push(bookmark);
-		await this.context.workspaceState.update(this.STORAGE_KEY, bookmarks);
+		
+		const storageKey = this.getWorkspaceStorageKey();
+		if (!storageKey) {
+			vscode.window.showErrorMessage('Unable to save bookmark: Invalid workspace');
+			return;
+		}
+		
+		await this.context.globalState.update(storageKey, bookmarks);
 		
 		// Verify the save
-		const savedBookmarks = this.context.workspaceState.get(this.STORAGE_KEY, []);
+		const savedBookmarks = this.context.globalState.get(storageKey, []);
 		console.log(`Bookmarks after save: ${savedBookmarks.length}`);
 
 		vscode.window.showInformationMessage(`Bookmark "${bookmark.name}" saved!`);
@@ -215,16 +248,16 @@ class BookmarkManager {
 	 * Get all saved bookmarks for the current workspace
 	 */
 	private getBookmarks(): BookmarkData[] {
-		const currentWorkspaceId = this.getCurrentWorkspaceId();
-		if (!currentWorkspaceId) {
+		const storageKey = this.getWorkspaceStorageKey();
+		if (!storageKey) {
 			// No workspace open, return empty array
-			console.log('No workspace ID found');
+			console.log('No workspace storage key found');
 			return [];
 		}
 		
-		// Since we're using workspaceState, bookmarks are already workspace-specific
-		const allBookmarks: BookmarkData[] = this.context.workspaceState.get(this.STORAGE_KEY, []);
-		console.log(`Retrieved ${allBookmarks.length} bookmarks from workspaceState for workspace: ${currentWorkspaceId}`);
+		// Get bookmarks specific to this workspace
+		const allBookmarks: BookmarkData[] = this.context.globalState.get(storageKey, []);
+		console.log(`Retrieved ${allBookmarks.length} bookmarks from globalState for workspace key: ${storageKey}`);
 		
 		return allBookmarks;
 	}
@@ -233,9 +266,14 @@ class BookmarkManager {
 	 * Delete a bookmark by ID
 	 */
 	private async deleteBookmarkById(id: string): Promise<void> {
-		const allBookmarks: BookmarkData[] = this.context.workspaceState.get(this.STORAGE_KEY, []);
+		const storageKey = this.getWorkspaceStorageKey();
+		if (!storageKey) {
+			return;
+		}
+		
+		const allBookmarks: BookmarkData[] = this.context.globalState.get(storageKey, []);
 		const filteredBookmarks = allBookmarks.filter((b: BookmarkData) => b.id !== id);
-		await this.context.workspaceState.update(this.STORAGE_KEY, filteredBookmarks);
+		await this.context.globalState.update(storageKey, filteredBookmarks);
 	}
 
 	/**
@@ -254,8 +292,13 @@ class BookmarkManager {
 		);
 
 		if (confirm === 'Yes') {
-			// Since workspaceState is already workspace-specific, just clear it
-			await this.context.workspaceState.update(this.STORAGE_KEY, []);
+			const storageKey = this.getWorkspaceStorageKey();
+			if (!storageKey) {
+				return;
+			}
+			
+			// Clear bookmarks for this workspace
+			await this.context.globalState.update(storageKey, []);
 			vscode.window.showInformationMessage('All workspace bookmarks cleared!');
 		}
 	}
