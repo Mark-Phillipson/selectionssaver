@@ -25,9 +25,79 @@ class BookmarkManager {
 	private context: vscode.ExtensionContext;
 	private readonly STORAGE_KEY_PREFIX = 'selectionssaver.bookmarks';
 	private readonly SWAP_SLOT_KEY = 'selectionssaver.swapSlot';
+	private swapSlotDecorationType: vscode.TextEditorDecorationType | null = null;
+	private swapSlotEditor: vscode.TextEditor | null = null;
 
 	constructor(context: vscode.ExtensionContext) {
 		this.context = context;
+		this.initializeDecorationType();
+		
+		// Listen for configuration changes
+		context.subscriptions.push(
+			vscode.workspace.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration('selectionssaver.swapSlotHighlightColor')) {
+					this.updateDecorationType();
+				}
+			})
+		);
+	}
+
+	/**
+	 * Initialize the decoration type for swap slot highlighting
+	 */
+	private initializeDecorationType(): void {
+		const config = vscode.workspace.getConfiguration('selectionssaver');
+		const highlightColor = config.get<string>('swapSlotHighlightColor', 'rgba(255, 200, 0, 0.5)');
+		
+		this.swapSlotDecorationType = vscode.window.createTextEditorDecorationType({
+			backgroundColor: highlightColor,
+			border: '1px solid rgba(255, 200, 0, 0.8)',
+			borderRadius: '2px'
+		});
+	}
+
+	/**
+	 * Update decoration type when configuration changes
+	 */
+	private updateDecorationType(): void {
+		// Dispose old decoration
+		if (this.swapSlotDecorationType) {
+			this.swapSlotDecorationType.dispose();
+		}
+		
+		// Create new decoration with updated color
+		this.initializeDecorationType();
+		
+		// Reapply decoration if there's an active swap slot
+		const swapSlot = this.context.workspaceState.get<any>(this.SWAP_SLOT_KEY);
+		if (swapSlot && this.swapSlotEditor) {
+			this.applySwapSlotDecoration(this.swapSlotEditor, swapSlot.selection);
+		}
+	}
+
+	/**
+	 * Apply decoration to the swap slot selection
+	 */
+	private applySwapSlotDecoration(editor: vscode.TextEditor, selection: any): void {
+		if (!this.swapSlotDecorationType) {
+			return;
+		}
+		
+		const startPos = new vscode.Position(selection.start.line, selection.start.character);
+		const endPos = new vscode.Position(selection.end.line, selection.end.character);
+		const range = new vscode.Range(startPos, endPos);
+		
+		editor.setDecorations(this.swapSlotDecorationType, [range]);
+	}
+
+	/**
+	 * Clear swap slot decoration
+	 */
+	private clearSwapSlotDecoration(): void {
+		if (this.swapSlotDecorationType && this.swapSlotEditor) {
+			this.swapSlotEditor.setDecorations(this.swapSlotDecorationType, []);
+		}
+		this.swapSlotEditor = null;
 	}
 
 	/**
@@ -312,6 +382,10 @@ class BookmarkManager {
 			vscode.window.showErrorMessage('No active editor found');
 			return;
 		}
+		
+		// Clear any existing decoration
+		this.clearSwapSlotDecoration();
+		
 		const swapSlot = {
 			filePath: editor.document.uri.fsPath,
 			selection: {
@@ -326,6 +400,11 @@ class BookmarkManager {
 			}
 		};
 		await this.context.workspaceState.update(this.SWAP_SLOT_KEY, swapSlot);
+		
+		// Apply decoration to highlight the saved selection
+		this.swapSlotEditor = editor;
+		this.applySwapSlotDecoration(editor, swapSlot.selection);
+		
 		vscode.window.showInformationMessage('Selection saved to swap slot.');
 	}
 
@@ -343,6 +422,10 @@ class BookmarkManager {
 			vscode.window.showErrorMessage('No selection in swap slot.');
 			return;
 		}
+		
+		// Clear the old decoration
+		this.clearSwapSlotDecoration();
+		
 		// Save current selection to swap slot
 		const currentSelection = {
 			filePath: editor.document.uri.fsPath,
@@ -373,6 +456,11 @@ class BookmarkManager {
 		const endPos = new vscode.Position(swapSlot.selection.end.line, swapSlot.selection.end.character);
 		targetEditor.selection = new vscode.Selection(startPos, endPos);
 		targetEditor.revealRange(new vscode.Range(startPos, endPos));
+		
+		// Apply decoration to the new swap slot location
+		this.swapSlotEditor = editor;
+		this.applySwapSlotDecoration(editor, currentSelection.selection);
+		
 		vscode.window.showInformationMessage('Selection swapped with swap slot.');
 	}
 }

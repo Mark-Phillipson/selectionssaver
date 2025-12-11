@@ -27,6 +27,20 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 ### Bookmark Management
 - **Clear All Bookmarks**: Remove all saved bookmarks (with confirmation)
 
+### Swap Slot Feature
+- **Save Selection to Swap Slot**: `Ctrl+Shift+1` (Windows/Linux) / `Cmd+Shift+1` (Mac)
+  - Saves your current selection to a temporary swap slot
+  - The saved selection is highlighted with a customizable color (default: semi-transparent yellow)
+  - The highlight remains visible until you swap or save a new selection
+  
+- **Swap With Swap Slot**: `Ctrl+Shift+2` (Windows/Linux) / `Cmd+Shift+2` (Mac)
+  - Exchanges your current selection with the swap slot selection
+  - Navigates to the swap slot location and selects that text
+  - Updates the swap slot to contain your previous selection
+  - The new swap slot location is highlighted
+  
+- **Visual Highlighting**: The swap slot selection is highlighted with a customizable background color to make it easy to see where your saved selection is located. You can customize this color in settings.
+
 ## How to Use
 
 1. **Save a Bookmark**:
@@ -41,7 +55,14 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
    - The extension will open the file and restore your exact selection and scroll position
 
 3. **Manage Bookmarks**:
-Will stop   - Use Command Palette → "Clear All Bookmarks" to remove all bookmarks
+   - Use Command Palette → "Clear All Bookmarks" to remove all bookmarks
+
+4. **Use Swap Slot for Quick Navigation**:
+   - Select text you want to save temporarily and press `Ctrl+Shift+1`
+   - The selection will be highlighted with a visible color
+   - Navigate elsewhere in your code
+   - Press `Ctrl+Shift+2` to swap to the saved location
+   - Your current selection becomes the new swap slot (also highlighted)
 
 ## Commands
 
@@ -50,8 +71,25 @@ Will stop   - Use Command Palette → "Clear All Bookmarks" to remove all bookma
 | `selectionssaver.saveBookmark` | Save current selection as bookmark | `Ctrl+Shift+S` |
 | `selectionssaver.restoreBookmark` | Restore or delete a saved bookmark | `Ctrl+Shift+R` |
 | `selectionssaver.clearAllBookmarks` | Clear all bookmarks | - |
-| `selectionssaver.saveSelectionToSwapSlot` | Save current selection to swap slot | `Ctrl+Shift+2` |
-| `selectionssaver.swapWithSwapSlot` | Swap current selection with swap slot | `Ctrl+Shift+1` |
+| `selectionssaver.saveSelectionToSwapSlot` | Save current selection to swap slot (with visual highlight) | `Ctrl+Shift+1` |
+| `selectionssaver.swapWithSwapSlot` | Swap current selection with swap slot | `Ctrl+Shift+2` |
+
+## Configuration
+
+### Swap Slot Highlight Color
+
+You can customize the background color used to highlight the swap slot selection:
+
+1. Open VS Code Settings (`Ctrl+,` or `Cmd+,`)
+2. Search for "selectionssaver"
+3. Modify **SelectionsSaver: Swap Slot Highlight Color**
+   - Default: `rgba(255, 200, 0, 0.3)` (semi-transparent yellow)
+   - Use any valid CSS color format:
+     - RGB with alpha: `rgba(255, 200, 0, 0.3)`
+     - Hex: `#ffcc0080`
+     - Named colors: `yellow`, `lightblue`, etc.
+   - Adjust the alpha channel (last number) to control transparency
+   - Choose colors that contrast well with your theme while keeping text readable
 
 ## Requirements
 

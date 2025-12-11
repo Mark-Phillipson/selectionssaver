@@ -107,6 +107,16 @@
           "when": "editorTextFocus"
         }
       ]
+    },
+    "configuration": {
+      "title": "SelectionsSaver",
+      "properties": {
+        "selectionssaver.swapSlotHighlightColor": {
+          "type": "string",
+          "default": "rgba(255, 200, 0, 0.5)",
+          "description": "Background color for highlighting the swap slot selection. Use CSS color format (e.g., 'rgba(255, 200, 0, 0.5)' for semi-transparent yellow)"
+        }
+      }
     }
   },
   "scripts": {

@@ -2,6 +2,16 @@
 
 All notable changes to the "selectionssaver" extension will be documented in this file.
 
+## [Unreleased]
+
+- Added visual highlighting for swap slot selections
+  - Swap slot selections are now highlighted with a customizable background color (default: semi-transparent yellow)
+  - Highlight remains visible until swapping or saving a new selection
+  - Configurable via `selectionssaver.swapSlotHighlightColor` setting
+  - Supports any CSS color format (rgba, hex, named colors)
+  - Text remains clearly readable with proper contrast
+  - Makes it easier to track where your swap slot is located
+
 ## [1.2.0] - 2025-06-06
 
 - Added ability to delete individual bookmarks directly from the restore picker (trash icon)
