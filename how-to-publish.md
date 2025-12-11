@@ -9,6 +9,7 @@ In the root of your extension folder, run:
 ```
 npm version patch
 ```
+npx --node-options="--trace-event-categories node.net.native,node.dns.native" @vscode/vsce publish
 
 This will increment the patch version in your `package.json` (e.g., from 1.0.0 to 1.0.1).
 
