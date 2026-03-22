@@ -8,6 +8,12 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 
 **NEW**: Bookmarks are now workspace-specific! Each workspace maintains its own set of bookmarks, providing better organization and preventing bookmark clutter when working on multiple projects.
 
+## Quick Preview
+
+This screenshot shows the command palette entries and Talon voice mappings for fast onboarding:
+
+![SelectionsSaver quick preview](images/example_screenshot.png)
+
 
 ## Features
 
@@ -73,6 +79,18 @@ A Visual Studio Code extension that provides enhanced bookmark functionality by 
 | `selectionssaver.clearAllBookmarks` | Clear all bookmarks | - |
 | `selectionssaver.saveSelectionToSwapSlot` | Save current selection to swap slot (with visual highlight) | `Ctrl+Shift+1` |
 | `selectionssaver.swapWithSwapSlot` | Swap current selection with swap slot | `Ctrl+Shift+2` |
+
+## Talon Voice Commands
+
+If you use [Talon Voice](https://talonvoice.com/) with VS Code, you can map voice commands to SelectionsSaver commands like this:
+
+```talon
+# My SelectionSaver Extension
+drop (marker | mark): user.vscode("selectionssaver.saveBookmark")
+collect (marker | mark): user.vscode("selectionssaver.restoreBookmark")
+swap save: user.vscode("selectionssaver.saveSelectionToSwapSlot")
+swap (marker | mark): user.vscode("selectionssaver.swapWithSwapSlot")
+```
 
 ## Configuration
 
