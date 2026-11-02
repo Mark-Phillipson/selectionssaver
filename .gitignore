@@ -3,3 +3,4 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+node_trace.1.log
