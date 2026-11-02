@@ -11,6 +11,11 @@ All notable changes to the "selectionssaver" extension will be documented in thi
   - Supports any CSS color format (rgba, hex, named colors)
   - Text remains clearly readable with proper contrast
   - Makes it easier to track where your swap slot is located
+- Enhanced bookmark naming when saving:
+  - If the name is left blank, generates a name from selected text when possible
+  - Falls back to a random verb+noun name when selected text is not usable
+  - Prevents duplicate names by appending a unique suffix when needed
+- Added a checkbox-style option in the save popup to clear all existing bookmarks before creating the new bookmark
 
 ## [1.2.0] - 2025-06-06
 

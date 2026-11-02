@@ -18,6 +18,11 @@ interface BookmarkData {
 	workspaceFolder?: string;
 }
 
+interface BookmarkSaveOptions {
+	nameInput: string;
+	clearExistingBeforeSave: boolean;
+}
+
 /**
  * Class to manage bookmark operations and selection swap
  */
@@ -145,6 +150,137 @@ class BookmarkManager {
 	}
 
 	/**
+	 * Prompt for bookmark name and whether existing bookmarks should be cleared first
+	 */
+	private async promptForBookmarkSaveOptions(): Promise<BookmarkSaveOptions | undefined> {
+		const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem>();
+		quickPick.title = 'Save Selection Bookmark';
+		quickPick.placeholder = 'Enter a name for this bookmark (optional)';
+		quickPick.ignoreFocusOut = true;
+		quickPick.canSelectMany = true;
+
+		const clearItem: vscode.QuickPickItem = {
+			label: 'Clear all existing bookmarks before saving this one',
+			description: 'Unchecked by default',
+			alwaysShow: true
+		};
+
+		quickPick.items = [clearItem];
+		quickPick.selectedItems = [];
+
+		quickPick.value = '';
+
+		return new Promise<BookmarkSaveOptions | undefined>((resolve) => {
+			let didAccept = false;
+
+			quickPick.onDidAccept(() => {
+				didAccept = true;
+				const clearExistingBeforeSave = quickPick.selectedItems.some(item => item.label === clearItem.label);
+				resolve({
+					nameInput: quickPick.value.trim(),
+					clearExistingBeforeSave
+				});
+				quickPick.hide();
+			});
+
+			quickPick.onDidHide(() => {
+				if (!didAccept) {
+					resolve(undefined);
+				}
+				quickPick.dispose();
+			});
+
+			quickPick.show();
+		});
+	}
+
+	/**
+	 * Build a bookmark name from selection text when possible
+	 */
+	private buildSelectionBasedName(editor: vscode.TextEditor): string | null {
+		const selectedText = editor.document.getText(editor.selection).trim();
+		if (!selectedText) {
+			return null;
+		}
+
+		const words = selectedText
+			.toLowerCase()
+			.replace(/[^a-z0-9_\s-]/g, ' ')
+			.split(/\s+/)
+			.filter(word => word.length >= 3)
+			.slice(0, 2)
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+
+		if (words.length === 0) {
+			return null;
+		}
+
+		return words.join('');
+	}
+
+	/**
+	 * Generate a random verb+noun bookmark name
+	 */
+	private generateRandomVerbNounName(): string {
+		const verbs = [
+			'Anchor', 'Trace', 'Jump', 'Scan', 'Map', 'Pin', 'Track', 'Capture', 'Focus', 'Link'
+		];
+		const nouns = [
+			'Comet', 'Harbor', 'Falcon', 'Beacon', 'Canyon', 'Ranger', 'Orbit', 'Summit', 'Compass', 'Bridge'
+		];
+
+		const verb = verbs[Math.floor(Math.random() * verbs.length)];
+		const noun = nouns[Math.floor(Math.random() * nouns.length)];
+		return `${verb}${noun}`;
+	}
+
+	/**
+	 * Ensure bookmark names are unique in current workspace
+	 */
+	private createUniqueBookmarkName(baseName: string, existingBookmarks: BookmarkData[]): string {
+		const existingNames = new Set(
+			existingBookmarks
+				.map(bookmark => bookmark.name?.trim())
+				.filter((name): name is string => Boolean(name))
+		);
+
+		if (!existingNames.has(baseName)) {
+			return baseName;
+		}
+
+		const timestampSuffix = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+		const timestampName = `${baseName}-${timestampSuffix}`;
+		if (!existingNames.has(timestampName)) {
+			return timestampName;
+		}
+
+		let counter = 2;
+		let candidate = `${baseName}-${counter}`;
+		while (existingNames.has(candidate)) {
+			counter++;
+			candidate = `${baseName}-${counter}`;
+		}
+		return candidate;
+	}
+
+	/**
+	 * Resolve final bookmark name from user input and generated fallbacks
+	 */
+	private resolveBookmarkName(nameInput: string, editor: vscode.TextEditor, existingBookmarks: BookmarkData[]): string {
+		if (nameInput) {
+			return this.createUniqueBookmarkName(nameInput, existingBookmarks);
+		}
+
+		const selectionBasedName = this.buildSelectionBasedName(editor);
+		if (selectionBasedName) {
+			return this.createUniqueBookmarkName(selectionBasedName, existingBookmarks);
+		}
+
+		const randomName = this.generateRandomVerbNounName();
+		return this.createUniqueBookmarkName(randomName, existingBookmarks);
+	}
+
+	/**
 	 * Save current selection and position as a bookmark
 	 */
 	async saveBookmark(): Promise<void> {
@@ -161,20 +297,32 @@ class BookmarkManager {
 			return;
 		}
 
-		// Get bookmark name from user
-		const name = await vscode.window.showInputBox({
-			prompt: 'Enter a name for this bookmark (optional)',
-			placeHolder: 'Bookmark name'
-		});
+		// Get bookmark name and save options from user
+		const saveOptions = await this.promptForBookmarkSaveOptions();
 
-		// If user cancelled (pressed Esc or clicked away), do not save
-		if (typeof name === 'undefined') {
+		// If user cancelled, do not save
+		if (!saveOptions) {
 			vscode.window.showInformationMessage('Bookmark not saved.');
 			return;
 		}
 
 		// Generate unique ID
 		const id = Date.now().toString();
+
+		// Get current bookmarks before save
+		let bookmarks = this.getBookmarks();
+
+		if (saveOptions.clearExistingBeforeSave) {
+			const storageKey = this.getWorkspaceStorageKey();
+			if (!storageKey) {
+				vscode.window.showErrorMessage('Unable to save bookmark: Invalid workspace');
+				return;
+			}
+			bookmarks = [];
+			await this.context.globalState.update(storageKey, bookmarks);
+		}
+
+		const resolvedName = this.resolveBookmarkName(saveOptions.nameInput, editor, bookmarks);
 		
 		// Get current workspace folder
 		const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
@@ -182,7 +330,7 @@ class BookmarkManager {
 		// Create bookmark data
 		const bookmark: BookmarkData = {
 			id,
-			name: name || `Bookmark ${id}`,
+			name: resolvedName,
 			filePath: editor.document.uri.fsPath,
 			selection: {
 				start: {
@@ -200,7 +348,6 @@ class BookmarkManager {
 		};
 
 		// Save bookmark
-		const bookmarks = this.getBookmarks();
 		console.log(`Current bookmarks before save: ${bookmarks.length}`);
 		console.log(`Adding bookmark with path: ${bookmark.filePath}`);
 		console.log(`Current workspace folders:`, vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath));

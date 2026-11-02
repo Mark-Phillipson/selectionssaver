@@ -22,6 +22,8 @@ This screenshot shows the command palette entries and Talon voice mappings for f
 - **Shortcut**: `Ctrl+Shift+S` (Windows/Linux) / `Cmd+Shift+S` (Mac)
 - Captures your current text selection, cursor position, and scroll location
 - Allows you to provide an optional name for the bookmark
+- If left blank, automatically generates a name from selected text when possible, otherwise uses a random verb+noun name
+- Includes an optional checkbox-style toggle to clear all existing bookmarks before saving the new one
 - Works across all code file types
 
 ### Restore Selection Bookmarks
@@ -52,7 +54,9 @@ This screenshot shows the command palette entries and Talon voice mappings for f
 1. **Save a Bookmark**:
    - Select some text or position your cursor where you want to bookmark
    - Press `Ctrl+Shift+S` or use Command Palette → "SelectionsSaver: Save Selection Bookmark"
-   - Optionally enter a name for the bookmark (duplicate names are allowed)
+   - Optionally enter a name for the bookmark
+   - Leave the name blank to auto-generate one
+   - (Optional) Tab to the "Clear all existing bookmarks before saving this one" checkbox and check it if you want to replace all prior bookmarks
 
 2. **Restore or Delete a Bookmark**:
    - Press `Ctrl+Shift+R` or use Command Palette → "SelectionsSaver: Restore Selection Bookmark"
@@ -156,6 +160,13 @@ It is technically possible to listen for file changes and attempt to update book
 
 ### 1.2.1
 - Fixed: Bookmarks are no longer saved if you cancel the name input box (e.g., by pressing Esc or clicking away). The extension will only save a bookmark if you confirm the input box.
+
+### 1.3.0
+- Added auto-generated bookmark names when the name field is left blank:
+  - Uses meaningful words from the current selection when available
+  - Falls back to a random verb+noun name
+- Added a checkbox in the save popup to optionally clear all existing bookmarks before saving the new one
+- Added bookmark-name uniqueness handling by appending a suffix when needed
 
 ### 1.2.0
 - Added ability to delete individual bookmarks directly from the restore picker (trash icon)
