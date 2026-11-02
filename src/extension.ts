@@ -14,7 +14,7 @@ interface BookmarkData {
 		end: { line: number; character: number };
 	};
 	scrollPosition: number;
-	timestamp: Date;
+	timestamp: Date | string;
 	workspaceFolder?: string;
 }
 
@@ -369,6 +369,18 @@ class BookmarkManager {
 		vscode.window.showInformationMessage(`Bookmark "${bookmark.name}" saved!`);
 	}
 
+	private formatBookmarkTimestamp(timestamp: Date | string): string {
+		const parsedTimestamp = timestamp instanceof Date ? timestamp : new Date(timestamp);
+		if (Number.isNaN(parsedTimestamp.getTime())) {
+			return String(timestamp);
+		}
+
+		return parsedTimestamp.toLocaleString(undefined, {
+			dateStyle: 'short',
+			timeStyle: 'short'
+		});
+	}
+
 	/**
 	 * Show list of bookmarks and restore or delete selected one
 	 */
@@ -390,7 +402,7 @@ class BookmarkManager {
 		quickPick.items = bookmarks.map(bookmark => ({
 			label: bookmark.name || 'Unnamed Bookmark',
 			description: `${bookmark.filePath} (Line ${bookmark.selection.start.line + 1})`,
-			detail: `Saved: ${bookmark.timestamp.toLocaleString()}`,
+			detail: `Saved: ${this.formatBookmarkTimestamp(bookmark.timestamp)}`,
 			bookmark: bookmark,
 			buttons: [
 				{
@@ -408,7 +420,7 @@ class BookmarkManager {
 			quickPick.items = bookmarks.map(bookmark => ({
 				label: bookmark.name || 'Unnamed Bookmark',
 				description: `${bookmark.filePath} (Line ${bookmark.selection.start.line + 1})`,
-				detail: `Saved: ${bookmark.timestamp.toLocaleString()}`,
+				detail: `Saved: ${this.formatBookmarkTimestamp(bookmark.timestamp)}`,
 				bookmark: bookmark,
 				buttons: [
 					{
